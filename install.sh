@@ -494,6 +494,7 @@ ssl_judge_and_install(){
         acme
     fi
 }
+
 nginx_systemd(){
     cat>/lib/systemd/system/nginx.service<<EOF
 [Unit]
@@ -515,6 +516,27 @@ EOF
 
 judge "Nginx systemd ServerFile 添加"
 }
+
+tls_type(){
+    if [[ -f "/etc/nginx/sbin/nginx" ]] && [[ -f "$nginx_conf" ]];then
+        echo "请选择支持的 TLS 版本（default:1）:"
+        echo "1: TLS1.2 and TLS1.3"
+        echo "2: TLS1.3 only"
+        read -p  "请输入：" tls_version
+        [[ -z ${tls_version} ]] && tls_version=1
+        if [[ $tls_version == 2 ]];then
+            sed -i 's/ssl_protocols.*/ssl_protocols         TLSv1.3;/' $nginx_conf
+            echo -e "${OK} ${GreenBG} 已切换至 TLS1.3 only ${Font}"
+        else
+            sed -i 's/ssl_protocols.*/ssl_protocols         TLSv1.2 TLSv1.3;/' $nginx_conf
+            echo -e "${OK} ${GreenBG} 已切换至TLS1.2 and TLS1.3 ${Font}"
+        fi
+        systemctl restart nginx
+        judge "Nginx 重启"
+    else
+        echo -e "${Error} ${RedBG} Nginx 或 配置文件不存在，请正确安装脚本后执行${Font}"
+    fi
+}
 main(){
     is_root
     check_system
@@ -531,13 +553,21 @@ main(){
     nginx_conf_add
     web_camouflage
 
-    #将证书生成放在最后，尽量避免多次尝试脚本从而造成的多次证书申请
     ssl_judge_and_install
     nginx_systemd
     show_information
     start_process_systemd
     acme_cron_update
 }
-
-main
+list(){
+    case $1 in
+        tls_modify)
+            tls_type
+            ;;
+        *)
+            main
+            ;;
+    esac
+}
+list $1
 
