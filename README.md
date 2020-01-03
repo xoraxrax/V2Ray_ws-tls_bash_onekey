@@ -12,7 +12,17 @@
 * 每周日的凌晨3点，Nginx 会自动重启以配合证书的签发定时任务进行，在此期间，节点无法正常连接，预计持续时间为若干秒至两分钟
 
 ### 更新日志
-* 请查看 CHANGELOG.md
+> 更多内容请查看 CHANGELOG.md
+## 2019-12-30 
+> 本次更新内容较多，并存在部分代码重构及合并，请留意，建议用户使用新版管理脚本时 先执行卸载后 重新安装对应版本
+* 新增 交互式菜单，重构为安装管理脚本，版本号初始化为1.0，诸多功能合并
+* 合并 h2 版合并至主版本并跟随更新，h2版（旧版）停止维护
+* 新增 变更UUID ALTERID PORT TLS 版本选项
+* 新增 V2ray 日志记录及查看
+* 新增 4合1 bbr锐速脚本引入，感谢 94ish.me 
+* 新增 卸载选项
+* 新增 证书手动更新，原理与计划任务更新相同，证书有效期仅小于30天可更新，默认不启用强制更新
+
 ### 证书
 > 如果你已经拥有了你所使用域名的证书文件，可以将 crt 和 key 文件命名为 v2ray.crt v2ray.key 放在 /data 目录下（若目录不存在请先建目录），请注意证书文件权限及证书有效期，自定义证书有效期过期后请自行续签
 
@@ -53,14 +63,10 @@
 * 准备一个域名，并将A记录添加好。
 * [V2ray官方说明](https://www.v2ray.com/)，了解 TLS WebSocket 及 V2ray 相关信息
 * 安装好 curl
-### 安装/更新方式（二选一）
+### 安装/更新方式（h2 和 ws 版本已合并）
 Vmess+websocket+TLS+Nginx+Website
 ```
-bash <(curl -L -s https://raw.githubusercontent.com/wulabing/V2Ray_ws-tls_bash_onekey/master/install.sh) | tee v2ray_ins.log
-```
-Vmess + HTTP2 over TLS
-```
-bash <(curl -L -s https://raw.githubusercontent.com/wulabing/V2Ray_ws-tls_bash_onekey/master/install_h2.sh) | tee v2ray_ins_h2.log
+wget -N --no-check-certificate -q -O install.sh "https://raw.githubusercontent.com/wulabing/V2Ray_ws-tls_bash_onekey/master/install.sh" && chmod +x install.sh && bash install.sh
 ```
 ### 启动方式
 
